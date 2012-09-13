@@ -20,6 +20,6 @@
     },
 
     "autoload": {
-        "classmap": ["./Module.php"]
+        "psr-0": {"LibraInstaller": "src"}
     }
 }
