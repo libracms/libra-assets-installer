@@ -11,21 +11,14 @@
         {"name": "Vitalii Nagara", "email": "duke@ejoom.com", "role": "maintainer, developer", "homepage": ""}
     ],
 
-    "minimum-stability": "stable",
+    "config": {
+        "bin-dir": "bin"
+    },
 
     "require": {
         "php": ">=5.3.2",
-        "zendframework/zendframework": "2.*",
-        "doctrine/common":  "2.3.*@RC",
-        "doctrine/dbal":    "2.3.*@RC",
-        "doctrine/orm":     "2.3.*@RC",
-        "doctrine/data-fixtures": "dev-master",
-        "doctrine/migrations": "dev-master",
-        "doctrine/doctrine-module": "dev-master",
-        "doctrine/doctrine-orm-module": "dev-master",
         "libra/libra":          "dev-default",
         "libra/libra-app":      "dev-default",
         "libra/libra-article":  "dev-default",
-        "libra/libra-locale":   "dev-default"
     }
 }
