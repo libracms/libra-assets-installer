@@ -17,9 +17,6 @@
 
     "require": {
         "php": ">=5.3.2",
-        "libra/libra":          "dev-default",
-        "libra/libra-app":      "dev-default",
-        "libra/libra-article":  "dev-default"
     },
 
     "autoload": {
