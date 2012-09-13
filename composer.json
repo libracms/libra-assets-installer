@@ -20,5 +20,9 @@
         "libra/libra":          "dev-default",
         "libra/libra-app":      "dev-default",
         "libra/libra-article":  "dev-default"
+    },
+
+    "autoload": {
+        "classmap": ["Module.php"]
     }
 }
