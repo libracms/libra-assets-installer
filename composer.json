@@ -2,7 +2,7 @@
     "name":         "libra/libra-installer",
     "type":         "library",
     "version":      "0.3.0",
-    "description":  "Installer of Libra CMS",
+    "description":  "Copies public module files (assets) to public/vendor. Used in Libra CMS",
     "keywords":     ["zf", "zf2", "zendframework", "cms", "libra"],
     "homepage":     "http://www.libra-cms.ejoom.com",
     "time":         "2012-09-12",
@@ -11,14 +11,7 @@
         {"name": "Vitalii Nagara", "email": "duke@ejoom.com", "role": "maintainer, developer", "homepage": ""}
     ],
 
-    "config": {
-        "bin-dir": "bin"
-    },
-
-    "require": {
-        "php": ">=5.3.3"
-    },
-
     "autoload": {
+        "psr-0": {"LibraInstaller": "src/"}
     }
 }

@@ -14,7 +14,7 @@ use Composer\Script\PackageEvent;
  *
  * @author duke
  */
-class Module
+class Installer
 {
     public static function postPackageInstall(PackageEvent $event)
     {
@@ -22,8 +22,12 @@ class Module
         $targetDir = $package->getTargetDir();
         $name = $package->getName();
         $path = "vendor/$name/public";
+        list($vendor, ) = explode('/', $name);
         if (is_dir($path)) {
-            link("vendor/public/$name", "../../../$path");
+            if (!file_exists("public")) mkdir("public");
+            if (!file_exists("public/vendor")) mkdir("public/vendor");
+            if (!file_exists("public/vendor/$vendor")) mkdir("public/vendor/$vendor");
+            link("../../../$path", "public/vendor/$name");
         }
     }
 
@@ -32,9 +36,11 @@ class Module
         $package = $event->getOperation()->getPackage();
         $targetDir = $package->getTargetDir();
         $name = $package->getName();
-        $path = "vendor/public/$name";
-        if (is_link($path)) {
-            unlink($path);
+        $link = "public/vendor/$name";
+        if (is_link($link)) {
+            unlink($link);
         }
+        list($vendor, ) = explode('/', $name);
+        @rmdir("public/vendor/$vendor"); //remove if empty
     }
 }
