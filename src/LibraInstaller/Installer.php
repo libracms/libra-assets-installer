@@ -27,6 +27,10 @@ class Installer
             if (!file_exists("public")) mkdir("public");
             if (!file_exists("public/vendor")) mkdir("public/vendor");
             if (!file_exists("public/vendor/$vendor")) mkdir("public/vendor/$vendor");
+            var_dump("../../../$path");
+            var_dump(realpath("public/vendor/$name"));
+            var_dump("public/vendor/$name");
+            var_dump(realpath("public/vendor/$name"));
             link("../../../$path", "public/vendor/$name");
         }
     }
