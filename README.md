@@ -7,10 +7,10 @@ Libra Installer
 
 ###Description
 It's applicable for modules with public directory.
-It will create symlink to this folder in _public/vendor/youvendor/package-name_
-So in view it will be accessible as example for libra/libra-article:
+It will create symlink to this folder in _public/vendor/yourvendor/package-name_
+So in view it will be accessible as example for _libra/libra-app_:
 ~~~
-$this->basePath() . '/vendor/libra/libra-article/css/screen.css';
+$this->basePath() . '/vendor/libra/libra-app/css/screen.css';
 ~~~
 
 

@@ -36,7 +36,7 @@ class Installer
         }
     }
 
-    public static function prePackageUnistall(PackageEvent $event)
+    public static function prePackageUninstall(PackageEvent $event)
     {
         $package = $event->getOperation()->getPackage();
         $targetDir = $package->getTargetDir();
