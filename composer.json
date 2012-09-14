@@ -20,6 +20,5 @@
     },
 
     "autoload": {
-        "psr-0": {"LibraInstaller": "src-test/"}
     }
 }
