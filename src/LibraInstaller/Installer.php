@@ -31,6 +31,7 @@ class Installer
             $o .= var_dump(realpath("public/vendor/$name"), 1);
             $o .= var_dump("public/vendor/$name", 1);
             $o .= var_dump(realpath("public/vendor/$name"), 1);
+            $o .= realpath("public/vendor/$name");
             file_put_contents('debug.log', $o);
             link("../../../$path", "public/vendor/$name");
         }
