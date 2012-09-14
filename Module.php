@@ -5,8 +5,6 @@
  * This source file is subject to the new BSD license.
  */
 
-namespace LibraInstaller;
-
 use Composer\Script\PackageEvent;
 
 /**
@@ -14,7 +12,7 @@ use Composer\Script\PackageEvent;
  *
  * @author duke
  */
-class Module
+class LibraInstaller
 {
     public static function postPackageInstall(PackageEvent $event)
     {
