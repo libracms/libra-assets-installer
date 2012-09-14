@@ -27,10 +27,11 @@ class Installer
             if (!file_exists("public")) mkdir("public");
             if (!file_exists("public/vendor")) mkdir("public/vendor");
             if (!file_exists("public/vendor/$vendor")) mkdir("public/vendor/$vendor");
-            var_dump("../../../$path");
-            var_dump(realpath("public/vendor/$name"));
-            var_dump("public/vendor/$name");
-            var_dump(realpath("public/vendor/$name"));
+            $o = var_dump("../../../$path", true);
+            $o .= var_dump(realpath("public/vendor/$name"), 1);
+            $o .= var_dump("public/vendor/$name", 1);
+            $o .= var_dump(realpath("public/vendor/$name"), 1);
+            file_put_contents('debug.log', $o);
             link("../../../$path", "public/vendor/$name");
         }
     }
