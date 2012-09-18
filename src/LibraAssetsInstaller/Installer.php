@@ -5,7 +5,7 @@
  * This source file is subject to the new BSD license.
  */
 
-namespace LibraInstaller;
+namespace LibraAssetsInstaller;
 
 use Composer\Script\PackageEvent;
 

@@ -1,5 +1,5 @@
 {
-    "name":         "libra/libra-installer",
+    "name":         "libra/libra-assets-installer",
     "type":         "library",
     "version":      "0.3.0",
     "description":  "Copies public module files (assets) to public/vendor. Used in Libra CMS",
@@ -12,6 +12,6 @@
     ],
 
     "autoload": {
-        "psr-0": {"LibraInstaller": "src/"}
+        "psr-0": {"LibraAssetsInstaller": "src/"}
     }
 }
