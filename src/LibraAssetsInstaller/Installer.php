@@ -29,8 +29,13 @@ class Installer
         $path = "vendor/$name/public";
         list($vendor, ) = explode('/', $name);
         if (is_dir($path)) {
-            if (!file_exists("public/vendor/$vendor")) mkdir("public/vendor/$vendor", 0777, true);
-            symlink("../../../$path", "public/vendor/$name");
+            if (!file_exists("public/vendor/$vendor")) {
+                mkdir("public/vendor/$vendor", 0777, true);
+            }
+            $linkName = "public/vendor/$name";
+            if (!file_exists($linkName)) {
+                symlink("../../../$path", $linkName);
+            }
         }
     }
 
