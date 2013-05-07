@@ -42,7 +42,6 @@ class Installer
     public static function prePackageUninstall(PackageEvent $event)
     {
         $package = $event->getOperation()->getPackage();
-        $targetDir = $package->getTargetDir();
         $name = $package->getName();
         $link = "public/vendor/$name";
         if (is_link($link)) {
@@ -50,5 +49,26 @@ class Installer
         }
         list($vendor, ) = explode('/', $name);
         @rmdir("public/vendor/$vendor"); //remove if empty
+    }
+
+    /**
+     * Create symlink if it appeared in new version
+     * @param \Composer\Script\PackageEvent $event
+     */
+    public static function postPackageUpdate (PackageEvent $event)
+    {
+        $package = $event->getOperation()->getTargetPackage();
+        $name = $package->getName();
+        $path = "vendor/$name/public";
+        list($vendor, ) = explode('/', $name);
+        if (is_dir($path)) {
+            if (!file_exists("public/vendor/$vendor")) {
+                mkdir("public/vendor/$vendor", 0777, true);
+            }
+            $linkName = "public/vendor/$name";
+            if (!file_exists($linkName)) {
+                symlink("../../../$path", $linkName);
+            }
+        }
     }
 }
