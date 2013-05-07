@@ -61,14 +61,17 @@ class Installer
         $name = $package->getName();
         $path = "vendor/$name/public";
         list($vendor, ) = explode('/', $name);
+        $linkName = "public/vendor/$name";
         if (is_dir($path)) {
             if (!file_exists("public/vendor/$vendor")) {
                 mkdir("public/vendor/$vendor", 0777, true);
             }
-            $linkName = "public/vendor/$name";
             if (!file_exists($linkName)) {
                 symlink("../../../$path", $linkName);
             }
+        } elseif (is_link($linkName)) {
+            unlink($linkName);
+            @rmdir("public/vendor/$vendor"); //remove if empty
         }
     }
 }
