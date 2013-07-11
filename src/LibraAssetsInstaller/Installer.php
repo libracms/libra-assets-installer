@@ -129,10 +129,7 @@ class Installer
                 echo "Cann't delete link $linkName\n";
             }
         } else {
-            //@todo: shuld be recursive deleted
-            //@rmdir($linkName);
-            echo "This script doesn't suport recursive deletion.\n"
-               . "You should manual delete $linkName folder as it was copied instead of linked.\n";
+            static::rmdir($linkName);
         }
     }
 
