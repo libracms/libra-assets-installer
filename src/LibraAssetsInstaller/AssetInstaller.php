@@ -23,7 +23,7 @@ class AssetInstaller extends LibraryInstaller
         parent::__construct($io, $composer, $type);
 
         $extra = $composer->getPackage()->getExtra();
-        if ($extra['public-dir'] != '') {
+        if (isset($extra['public-dir'])) {
             $this->publicDir = $extra['public-dir'];
         }
         $this->vendorDir = $this->publicDir . '/' . $this->vendorDir;
