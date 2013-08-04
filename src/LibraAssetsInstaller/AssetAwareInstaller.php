@@ -27,11 +27,11 @@ class AssetAwareInstaller extends LibraryInstaller
         parent::__construct($io, $composer, $type);
 
         $extra = $composer->getPackage()->getExtra();
-        if ($extra['publicDir'] != '') {
-            $this->publicDir = $extra['publicDir'];
+        if ($extra['public-dir'] != '') {
+            $this->publicDir = $extra['public-dir'];
         }
-        if ($extra['packageAssetDir'] != '') {
-            $this->packageAssetDir = $extra['packageAssetDir'];
+        if ($extra['packagea-asset-dir'] != '') {
+            $this->packageAssetDir = $extra['package-asset-dir'];
         }
 
         $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;

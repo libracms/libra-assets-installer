@@ -19,8 +19,8 @@
     
     "extra": {
         "class": [
-            "LibraAssetsInstaller\\AssetIsntaller",
-            "LibraAssetsInstaller\\AssetAwareIsntaller"
-        ],
+            "LibraAssetsInstaller\\AssetInstaller",
+            "LibraAssetsInstaller\\AssetAwareInstaller"
+        ]
     }
 }
