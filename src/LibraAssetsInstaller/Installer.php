@@ -14,6 +14,7 @@ use Composer\Script\PackageEvent;
  * Creats symlink in webserver document root (public) of module assets that contains in `public` directory
  * Aloso supports Windows Vista/Windows Server 2008 or greater
  *
+ * @deprecated since version 2.0. <br> Use types {"asset", "asset-aware"} instead of it
  * @author duke
  */
 class Installer

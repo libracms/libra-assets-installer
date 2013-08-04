@@ -1,6 +1,6 @@
 {
     "name":         "libra/libra-assets-installer",
-    "type":         "library",
+    "type":         "composer-installer",
     "description":  "Makes accessible vendor assets (js, css, images) by creating/updating symlink to public/vendor/vendor-name folder",
     "keywords":     ["zf", "zf2", "zendframework", "cms", "libra"],
     "homepage":     "http://www.ejoom.com/libra-cms/",
@@ -9,7 +9,18 @@
         {"name": "Vitalii Nagara", "email": "duke@ejoom.com", "role": "maintainer, developer", "homepage": ""}
     ],
 
+    "require-dev": {
+        "composer/composer":                            "dev-master"
+    },
+
     "autoload": {
         "psr-0": {"LibraAssetsInstaller\\": "src/"}
+    },
+    
+    "extra": {
+        "class": [
+            "LibraAssetsInstaller\\AssetIsntaller",
+            "LibraAssetsInstaller\\AssetAwareIsntaller"
+        ],
     }
 }
