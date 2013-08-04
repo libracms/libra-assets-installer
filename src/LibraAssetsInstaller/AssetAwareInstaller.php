@@ -21,6 +21,8 @@ class AssetAwareInstaller extends LibraryInstaller
 
     protected $publicVendorDir;
 
+    protected $vendorDirRelative;
+
 
     public function __construct(IOInterface $io, Composer $composer, $type = 'asset-aware')
     {
@@ -35,6 +37,7 @@ class AssetAwareInstaller extends LibraryInstaller
         }
 
         $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
+        $this->vendorDirRelative = $this->vendorDir;
     }
 
     /**
@@ -45,15 +48,15 @@ class AssetAwareInstaller extends LibraryInstaller
         return $packageType === 'asset-aware';
     }
 
-    protected function initializeVendorAssetDir()
+    protected function initializeVendorAssetDir($package)
     {
-        $this->filesystem->ensureDirectoryExists($this->publicVendorDir);
-        $this->publicVendorDir = realpath($this->publicVendorDir);
+        $publicPackageAssetPath = dirname($this->getLinkName($package));
+        $this->filesystem->ensureDirectoryExists($publicPackageAssetPath);
     }
 
     protected function isAssetExists($package)
     {
-        return file_exists($this->getInstallPath($package) . '/' . $this->publicDir);
+        return file_exists($this->getInstallPath($package) . '/' . $this->packageAssetDir);
     }
 
     /**
@@ -62,7 +65,8 @@ class AssetAwareInstaller extends LibraryInstaller
      */
     protected function getLinkName($package)
     {
-        return $this->publicDir . '/' . $this->getInstallPath($package);
+        $targetDir = $package->getTargetDir();
+        return $this->getPublicPackageBasePath($package) . ($targetDir ? '/' . $targetDir : '');
     }
 
     protected function isLinkExists($package)
@@ -79,26 +83,34 @@ class AssetAwareInstaller extends LibraryInstaller
 
     protected function getAssetLinkTarget($package)
     {
+        $targetDir = $package->getTargetDir();
         return str_repeat('../', $this->findDirDeep())
-            . $this->vendorDir
+            . $this->vendorDirRelative
             . '/' . $package->getPrettyName()
             . ($targetDir ? '/'.$targetDir : '')
             . '/' . $this->packageAssetDir;
     }
 
+    protected function getPublicPackageBasePath($package)
+    {
+        return $this->publicVendorDir . '/' . $package->getPrettyName();
+    }
+
     protected function createPublicAsset($package)
     {
-        $targetDir = $package->getTargetDir();
-        $this->initializeVendorAssetDir();
-        @symlink($this->getAssetLinkTarget($package), $this->getLinkName($package));
+        $this->initializeVendorAssetDir($package);
+        $linkName = $this->getLinkName($package);
+        if (!file_exists($linkName)) {
+            @symlink($this->getAssetLinkTarget($package), $linkName);
+        }
     }
 
     protected function removePublicAsset($package)
     {
-        $link = $this->getLinkName($package);
-        unlink($link);
+        $publicPackageBasePath = $this->getPublicPackageBasePath($package);
+        $this->filesystem->remove($publicPackageBasePath);
         if (strpos($package->getPrettyName(), '/')) {
-            $packagePublicVendorDir = dirname($link);
+            $packagePublicVendorDir = dirname($publicPackageBasePath);
             if (is_dir($packagePublicVendorDir) && !glob($packagePublicVendorDir.'/*')) {
                 @rmdir($packagePublicVendorDir);
             }
