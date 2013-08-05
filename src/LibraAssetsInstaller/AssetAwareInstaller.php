@@ -15,6 +15,9 @@ use Composer\Repository\InstalledRepositoryInterface;
  */
 class AssetAwareInstaller extends LibraryInstaller
 {
+    protected $publicDirDefault = 'public';
+    protected $packageAssetDirDefault = 'public';
+
     /**
      * depends on package config, default = public
      * @var string
@@ -78,12 +81,12 @@ class AssetAwareInstaller extends LibraryInstaller
         if (isset($extra['public-dir'])) {
             $this->publicDir = $extra['public-dir'];
         } else {
-            $this->publicDir = 'public';
+            $this->publicDir = $this->publicDirDefault;
         }
         if (isset($extra['packagea-asset-dir'])) {
             $this->packageAssetDir = $extra['package-asset-dir'];
         } else {
-            $this->packageAssetDir = 'public';
+            $this->packageAssetDir = $this->packageAssetDirDefault;
         }
         if (isset($extra['add-target-dir'])) {
             $this->addTargetDir = $extra['add-target-dir'];
@@ -142,8 +145,7 @@ class AssetAwareInstaller extends LibraryInstaller
     {
         $targetPath = $this->filesystem->findShortestPath(
             $this->linkPath,
-            $this->getInstallPath($package) . $this->packageAssetDir,
-            true
+            $this->getInstallPath($package) . '/' . $this->packageAssetDir
         );
 
         return $targetPath;
@@ -198,7 +200,7 @@ class AssetAwareInstaller extends LibraryInstaller
             }
         } catch (\ErrorException $e) {
             static::copy(
-                $this->getInstallPath($package) . $this->packageAssetDir,
+                $this->getInstallPath($package) . '/' . $this->packageAssetDir,
                 $this->linkPath
             );
         }

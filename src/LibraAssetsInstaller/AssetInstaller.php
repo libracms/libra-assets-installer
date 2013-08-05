@@ -27,7 +27,7 @@ class AssetInstaller extends LibraryInstaller
     protected $vendorDirOriginal;
 
     /**
-     * Flage to add or don't target directory to public asset path
+     * Flage to add or don't add target directory to public asset path
      * Package specified
      * @var type
      */
