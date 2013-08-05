@@ -23,7 +23,7 @@ class AssetAwareInstaller extends LibraryInstaller
      * @var string
      */
     protected $publicDir;
-    
+
     /**
      * depends on package config, default = public
      * @var string
@@ -101,9 +101,9 @@ class AssetAwareInstaller extends LibraryInstaller
 
     protected function initializePublicPackagePath(PackageInterface $package)
     {
-        $publicPackagePackagePath = dirname($this->getLinkName($package));
-        $this->filesystem->ensureDirectoryExists($publicPackagePackagePath);
-        $this->linkPath = realpath($publicPackagePackagePath) . '/' . $this->packageAssetDir;
+        $linkReletivePath = $this->getLinkName($package);
+        $this->filesystem->ensureDirectoryExists(dirname($linkReletivePath));
+        $this->linkPath = realpath(dirname($linkReletivePath)) . '/' . basename($linkReletivePath);
     }
 
     protected function isAssetExists(PackageInterface $package)
@@ -159,32 +159,33 @@ class AssetAwareInstaller extends LibraryInstaller
      * @param       string   $permissions New folder creation permissions
      * @return      bool Returns true on success, false on failure
      */
-    public static function copy($source, $dest, $permissions = 0755)
+    public function copy($source, $dest, $permissions = 0755)
     {
-        $oldUmask = umask();
-        umask(0777 ^ $permissions);
-
+        //if file then copy with proper permissions
         if (!is_dir($source)) {
-            return copy($source, $dest);
+            $oldUmask = umask();
+            umask(0777 ^ $permissions);
+            $result = copy($source, $dest);
+            umask($oldUmask);
+            return $result;
         }
 
-        if (is_dir($dest) && !is_writable($dest)) {
-            printf("Have no permitions to write into %s\n", $dest);
-            return false;
-        }
-        if (!mkdir($dest, $permissions)) {
-            printf("Cann't create %s dir\n", $dest);
+        try {
+            if (false === mkdir($dest, $permissions)) {
+                throw new \ErrorException();
+            }
+        } catch (\ErrorException $e) {
+            $this->io->write(sprintf("    Cann't create %s directory\n    " . $e->getMessage(), $dest));
             return false;
         }
 
         $dir = opendir($source);
         while ( false !== ($file = readdir($dir)) ) {
             if (( $file != '.' ) && ( $file != '..' )) {
-                static::copy($source . '/' . $file, $dest . '/' . $file);
+                $this->copy($source . '/' . $file, $dest . '/' . $file, $permissions);
             }
         }
         closedir($dir);
-        umask($oldUmask);
 
         return true;
     }
@@ -192,6 +193,12 @@ class AssetAwareInstaller extends LibraryInstaller
     protected function createPublicAsset(PackageInterface $package)
     {
         $this->initializePublicPackagePath($package); //to setup $this->linkPath
+
+        //Remove link created by assets-installer version 1.x
+        if (is_link($this->linkPath)) {
+            unlink($this->linkPath);
+        }
+
         try {
             // under linux symlinks are not always supported for example
             // when using it in smbfs mounted folder
@@ -199,7 +206,7 @@ class AssetAwareInstaller extends LibraryInstaller
                 throw new \ErrorException();
             }
         } catch (\ErrorException $e) {
-            static::copy(
+            $this->copy(
                 $this->getInstallPath($package) . '/' . $this->packageAssetDir,
                 $this->linkPath
             );
@@ -249,4 +256,3 @@ class AssetAwareInstaller extends LibraryInstaller
         parent::uninstall($repo, $package);
     }
 }
-
