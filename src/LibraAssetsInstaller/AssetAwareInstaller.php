@@ -93,11 +93,6 @@ class AssetAwareInstaller extends LibraryInstaller
         return $this->getPublicPackageBasePath($package) . ($targetDir ? '/' . $targetDir : '');
     }
 
-    protected function isLinkExists(PackageInterface $package)
-    {
-        return file_exists($this->getLinkName($package));
-    }
-
     protected function findDirDeep()
     {
         //without target dir it will be '../../../'
@@ -147,21 +142,19 @@ class AssetAwareInstaller extends LibraryInstaller
         $this->setupPackageVars($package);
         if ($this->isAssetExists($package)) {
             $this->createPublicAsset($package);
-        } elseif ($this->isLinkExists($package)) {
-            //remove asset if in new version it disappeared
-            $this->removePublicAsset($package);
         }
     }
 
     public function update(InstalledRepositoryInterface $repo, PackageInterface $initial, PackageInterface $target)
     {
         parent::update($repo, $initial, $target);
+        $this->setupPackageVars($initial);
+        if ($this->isAssetExists($initial)) {
+            $this->removePublicAsset($initial);
+        }
         $this->setupPackageVars($target);
-        if ($this->isAssetExists($$target)) {
-            $this->createPublicAsset($$target);
-        } elseif ($this->isLinkExists($$target)) {
-            //remove asset if in new version it disappeared
-            $this->removePublicAsset($$target);
+        if ($this->isAssetExists($target)) {
+            $this->createPublicAsset($target);
         }
     }
 
