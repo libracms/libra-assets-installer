@@ -33,7 +33,17 @@ class AssetAwareInstaller extends LibraryInstaller
      */
     protected $publicVendorDir;
 
-    /** Global */
+    /**
+     * Absolute path to link <br>
+     * Depends on package
+     * @var string
+     */
+    protected $linkPath;
+
+    /**
+     * relative path for link target to make it transportable into file system
+     * @var string
+     */
     protected $vendorDirRelative;
 
 
@@ -69,13 +79,16 @@ class AssetAwareInstaller extends LibraryInstaller
             $this->packageAssetDir = 'public';
         }
 
-        $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
+        $this->linkPath = null;
+
+        $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDirRelative;
     }
 
-    protected function initializeVendorAssetDir(PackageInterface $package)
+    protected function initializePublicPackagePath(PackageInterface $package)
     {
-        $publicPackageAssetPath = dirname($this->getLinkName($package));
-        $this->filesystem->ensureDirectoryExists($publicPackageAssetPath);
+        $publicPackagePackagePath = dirname($this->getLinkName($package));
+        $this->filesystem->ensureDirectoryExists($publicPackagePackagePath);
+        $this->linkPath = realpath($publicPackagePackagePath) . '/' . $this->packageAssetDir;
     }
 
     protected function isAssetExists(PackageInterface $package)
@@ -93,34 +106,32 @@ class AssetAwareInstaller extends LibraryInstaller
         return $this->getPublicPackageBasePath($package) . ($targetDir ? '/' . $targetDir : '');
     }
 
-    protected function findDirDeep()
-    {
-        //without target dir it will be '../../../'
-        //@todo: change it if target dir set
-        return 3;
-    }
-
-    protected function getAssetLinkTarget(PackageInterface $package)
-    {
-        $targetDir = $package->getTargetDir();
-        return str_repeat('../', $this->findDirDeep())
-            . $this->vendorDirRelative
-            . '/' . $package->getPrettyName()
-            . ($targetDir ? '/'.$targetDir : '')
-            . '/' . $this->packageAssetDir;
-    }
-
     protected function getPublicPackageBasePath(PackageInterface $package)
     {
         return $this->publicVendorDir . '/' . $package->getPrettyName();
     }
 
+    /**
+     * Relative path to target
+     * @param \Composer\Package\PackageInterface $package
+     * @return string
+     */
+    protected function getAssetLinkTargetPath(PackageInterface $package)
+    {
+        $targetPath = $this->filesystem->findShortestPath(
+            $this->linkPath,
+            $this->getInstallPath($package) . $this->packageAssetDir,
+            true
+        );
+
+        return $targetPath;
+    }
+
     protected function createPublicAsset(PackageInterface $package)
     {
-        $this->initializeVendorAssetDir($package);
-        $linkName = $this->getLinkName($package);
-        if (!file_exists($linkName)) {
-            @symlink($this->getAssetLinkTarget($package), $linkName);
+        $this->initializePublicPackagePath($package); //to setup $this->linkPath
+        if (!file_exists($this->linkPath)) {
+            @symlink($this->getAssetLinkTargetPath($package), $this->linkPath);
         }
     }
 
