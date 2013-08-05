@@ -20,7 +20,8 @@
     "extra": {
         "class": [
             "LibraAssetsInstaller\\AssetInstaller",
-            "LibraAssetsInstaller\\AssetAwareInstaller"
+            "LibraAssetsInstaller\\AssetAwareInstaller",
+            "LibraAssetsInstaller\\SymfonyAssetAwareInstaller"
         ]
     }
 }

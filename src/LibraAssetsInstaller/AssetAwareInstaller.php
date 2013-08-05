@@ -15,28 +15,31 @@ use Composer\Repository\InstalledRepositoryInterface;
  */
 class AssetAwareInstaller extends LibraryInstaller
 {
-    protected $publicDir = 'public';
+    /**
+     * depends on package config, default = public
+     * @var string
+     */
+    protected $publicDir;
     
-    protected $packageAssetDir = 'public';
+    /**
+     * depends on package config, default = public
+     * @var string
+     */
+    protected $packageAssetDir;
 
+    /**
+     * depends on package config, default = public/vendor
+     * @var string
+     */
     protected $publicVendorDir;
 
+    /** Global */
     protected $vendorDirRelative;
 
 
     public function __construct(IOInterface $io, Composer $composer, $type = 'asset-aware')
     {
         parent::__construct($io, $composer, $type);
-
-        $extra = $composer->getPackage()->getExtra();
-        if (isset($extra['public-dir'])) {
-            $this->publicDir = $extra['public-dir'];
-        }
-        if (isset($extra['packagea-asset-dir'])) {
-            $this->packageAssetDir = $extra['package-asset-dir'];
-        }
-
-        $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
         $this->vendorDirRelative = $this->vendorDir;
     }
 
@@ -48,13 +51,34 @@ class AssetAwareInstaller extends LibraryInstaller
         return $packageType === 'asset-aware';
     }
 
-    protected function initializeVendorAssetDir($package)
+    /**
+     * setup package relative variables
+     * @param type $package
+     */
+    protected function setupPackageVars(PackageInterface $package)
+    {
+        $extra = $package->getExtra();
+        if (isset($extra['public-dir'])) {
+            $this->publicDir = $extra['public-dir'];
+        } else {
+            $this->publicDir = 'public';
+        }
+        if (isset($extra['packagea-asset-dir'])) {
+            $this->packageAssetDir = $extra['package-asset-dir'];
+        } else {
+            $this->packageAssetDir = 'public';
+        }
+
+        $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
+    }
+
+    protected function initializeVendorAssetDir(PackageInterface $package)
     {
         $publicPackageAssetPath = dirname($this->getLinkName($package));
         $this->filesystem->ensureDirectoryExists($publicPackageAssetPath);
     }
 
-    protected function isAssetExists($package)
+    protected function isAssetExists(PackageInterface $package)
     {
         return file_exists($this->getInstallPath($package) . '/' . $this->packageAssetDir);
     }
@@ -63,13 +87,13 @@ class AssetAwareInstaller extends LibraryInstaller
      * @param type $package
      * @return string name of link (like public/vendor/vendor-name/package-name
      */
-    protected function getLinkName($package)
+    protected function getLinkName(PackageInterface $package)
     {
         $targetDir = $package->getTargetDir();
         return $this->getPublicPackageBasePath($package) . ($targetDir ? '/' . $targetDir : '');
     }
 
-    protected function isLinkExists($package)
+    protected function isLinkExists(PackageInterface $package)
     {
         return file_exists($this->getLinkName($package));
     }
@@ -81,7 +105,7 @@ class AssetAwareInstaller extends LibraryInstaller
         return 3;
     }
 
-    protected function getAssetLinkTarget($package)
+    protected function getAssetLinkTarget(PackageInterface $package)
     {
         $targetDir = $package->getTargetDir();
         return str_repeat('../', $this->findDirDeep())
@@ -91,12 +115,12 @@ class AssetAwareInstaller extends LibraryInstaller
             . '/' . $this->packageAssetDir;
     }
 
-    protected function getPublicPackageBasePath($package)
+    protected function getPublicPackageBasePath(PackageInterface $package)
     {
         return $this->publicVendorDir . '/' . $package->getPrettyName();
     }
 
-    protected function createPublicAsset($package)
+    protected function createPublicAsset(PackageInterface $package)
     {
         $this->initializeVendorAssetDir($package);
         $linkName = $this->getLinkName($package);
@@ -105,7 +129,7 @@ class AssetAwareInstaller extends LibraryInstaller
         }
     }
 
-    protected function removePublicAsset($package)
+    protected function removePublicAsset(PackageInterface $package)
     {
         $publicPackageBasePath = $this->getPublicPackageBasePath($package);
         $this->filesystem->remove($publicPackageBasePath);
@@ -120,6 +144,7 @@ class AssetAwareInstaller extends LibraryInstaller
     public function install(InstalledRepositoryInterface $repo, PackageInterface $package)
     {
         parent::install($repo, $package);
+        $this->setupPackageVars($package);
         if ($this->isAssetExists($package)) {
             $this->createPublicAsset($package);
         } elseif ($this->isLinkExists($package)) {
@@ -131,16 +156,18 @@ class AssetAwareInstaller extends LibraryInstaller
     public function update(InstalledRepositoryInterface $repo, PackageInterface $initial, PackageInterface $target)
     {
         parent::update($repo, $initial, $target);
-        if ($this->isAssetExists($package)) {
-            $this->createPublicAsset($package);
-        } elseif ($this->isLinkExists($package)) {
+        $this->setupPackageVars($target);
+        if ($this->isAssetExists($$target)) {
+            $this->createPublicAsset($$target);
+        } elseif ($this->isLinkExists($$target)) {
             //remove asset if in new version it disappeared
-            $this->removePublicAsset($package);
+            $this->removePublicAsset($$target);
         }
     }
 
     public function uninstall(InstalledRepositoryInterface $repo, PackageInterface $package)
     {
+        $this->setupPackageVars($package);
         if ($this->isAssetExists($package)) {
             $this->removePublicAsset($package);
         }
