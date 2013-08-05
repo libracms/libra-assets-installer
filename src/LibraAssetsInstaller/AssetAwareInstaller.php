@@ -127,11 +127,58 @@ class AssetAwareInstaller extends LibraryInstaller
         return $targetPath;
     }
 
+    /**
+     * Copy a file or recursively copy a folder<br/>
+     * Print warning if file wasn't copied
+     * @param       string   $source    Source path
+     * @param       string   $dest      Destination path
+     * @param       string   $permissions New folder creation permissions
+     * @return      bool Returns true on success, false on failure
+     */
+    public static function copy($source, $dest, $permissions = 0755)
+    {
+        $oldUmask = umask();
+        umask(0777 ^ $permissions);
+
+        if (!is_dir($source)) {
+            return copy($source, $dest);
+        }
+
+        if (is_dir($dest) && !is_writable($dest)) {
+            printf("Have no permitions to write into %s\n", $dest);
+            return false;
+        }
+        if (!mkdir($dest, $permissions)) {
+            printf("Cann't create %s dir\n", $dest);
+            return false;
+        }
+
+        $dir = opendir($source);
+        while ( false !== ($file = readdir($dir)) ) {
+            if (( $file != '.' ) && ( $file != '..' )) {
+                static::copy($source . '/' . $file, $dest . '/' . $file);
+            }
+        }
+        closedir($dir);
+        umask($oldUmask);
+
+        return true;
+    }
+
     protected function createPublicAsset(PackageInterface $package)
     {
         $this->initializePublicPackagePath($package); //to setup $this->linkPath
-        if (!file_exists($this->linkPath)) {
-            @symlink($this->getAssetLinkTargetPath($package), $this->linkPath);
+        try {
+            // under linux symlinks are not always supported for example
+            // when using it in smbfs mounted folder
+            if (false === symlink($this->getAssetLinkTargetPath($package), $this->linkPath)) {
+                throw new \ErrorException();
+            }
+        } catch (\ErrorException $e) {
+            static::copy(
+                $this->getInstallPath($package) . $this->packageAssetDir,
+                $this->linkPath
+            );
         }
     }
 
