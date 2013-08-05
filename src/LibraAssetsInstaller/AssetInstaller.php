@@ -25,6 +25,14 @@ class AssetInstaller extends LibraryInstaller
      * @var string
      */
     protected $vendorDirOriginal;
+
+    /**
+     * Flage to add or don't target directory to public asset path
+     * Package specified
+     * @var type
+     */
+    protected $addTargetDir;
+
     /**
      * {@inheridDoc}
      */
@@ -55,6 +63,12 @@ class AssetInstaller extends LibraryInstaller
             $this->publicDir = 'public';
         }
 
+        if (isset($extra['add-target-dir'])) {
+            $this->addTargetDir = $extra['add-target-dir'];
+        } else {
+            $this->addTargetDir = false;
+        }
+
         $this->vendorDir = $this->publicDir . '/' . $this->vendorDirOriginal;
     }
 
@@ -67,6 +81,6 @@ class AssetInstaller extends LibraryInstaller
 
         $targetDir = $package->getTargetDir();
 
-        return $this->getPackageBasePath($package) . ($targetDir ? '/'.$targetDir : '');
+        return $this->getPackageBasePath($package) . ($this->addTargetDir && $targetDir ? '/'.$targetDir : '');
     }
 }

@@ -46,6 +46,13 @@ class AssetAwareInstaller extends LibraryInstaller
      */
     protected $vendorDirRelative;
 
+    /**
+     * Flage to add or don't add target directory to public asset path
+     * Package specified
+     * @var type
+     */
+    protected $addTargetDir;
+
 
     public function __construct(IOInterface $io, Composer $composer, $type = 'asset-aware')
     {
@@ -78,6 +85,11 @@ class AssetAwareInstaller extends LibraryInstaller
         } else {
             $this->packageAssetDir = 'public';
         }
+        if (isset($extra['add-target-dir'])) {
+            $this->addTargetDir = $extra['add-target-dir'];
+        } else {
+            $this->addTargetDir = false;
+        }
 
         $this->linkPath = null;
 
@@ -97,13 +109,23 @@ class AssetAwareInstaller extends LibraryInstaller
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getInstallPath(PackageInterface $package)
+    {
+        $targetDir = $package->getTargetDir();
+
+        return $this->getPackageBasePath($package) . ($this->addTargetDir && $targetDir ? '/'.$targetDir : '');
+    }
+
+    /**
      * @param type $package
      * @return string name of link (like public/vendor/vendor-name/package-name
      */
     protected function getLinkName(PackageInterface $package)
     {
         $targetDir = $package->getTargetDir();
-        return $this->getPublicPackageBasePath($package) . ($targetDir ? '/' . $targetDir : '');
+        return $this->getPublicPackageBasePath($package) . ($this->addTargetDir && $targetDir ? '/' . $targetDir : '');
     }
 
     protected function getPublicPackageBasePath(PackageInterface $package)
