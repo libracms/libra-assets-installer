@@ -31,7 +31,7 @@ class AssetAwareInstaller extends LibraryInstaller
     protected $packageAssetDir;
 
     /**
-     * depends on package config, default = public/vendor
+     * Depends on root config, default = public/vendor
      * @var string
      */
     protected $publicVendorDir;
@@ -44,12 +44,6 @@ class AssetAwareInstaller extends LibraryInstaller
     protected $linkPath;
 
     /**
-     * relative path for link target to make it transportable into file system
-     * @var string
-     */
-    protected $vendorDirRelative;
-
-    /**
      * Flage to add or don't add target directory to public asset path
      * Package specified
      * @var type
@@ -60,7 +54,14 @@ class AssetAwareInstaller extends LibraryInstaller
     public function __construct(IOInterface $io, Composer $composer, $type = 'asset-aware')
     {
         parent::__construct($io, $composer, $type);
-        $this->vendorDirRelative = $this->vendorDir;
+
+        $config = $composer->getConfig();
+        if (isset($config['public-dir'])) {
+            $this->publicDir = $config['public-dir'];
+        } else {
+            $this->publicDir = $this->publicDirDefault;
+        }
+        $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
     }
 
     /**
@@ -78,11 +79,6 @@ class AssetAwareInstaller extends LibraryInstaller
     protected function setupPackageVars(PackageInterface $package)
     {
         $extra = $package->getExtra();
-        if (isset($extra['public-dir'])) {
-            $this->publicDir = $extra['public-dir'];
-        } else {
-            $this->publicDir = $this->publicDirDefault;
-        }
         if (isset($extra['packagea-asset-dir'])) {
             $this->packageAssetDir = $extra['package-asset-dir'];
         } else {
@@ -95,8 +91,6 @@ class AssetAwareInstaller extends LibraryInstaller
         }
 
         $this->linkPath = null;
-
-        $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDirRelative;
     }
 
     protected function initializePublicPackagePath(PackageInterface $package)

@@ -21,12 +21,6 @@ class AssetInstaller extends LibraryInstaller
     protected $publicDir;
 
     /**
-     * Original and relative path of vendor dir
-     * @var string
-     */
-    protected $vendorDirOriginal;
-
-    /**
      * Flage to add or don't add target directory to public asset path
      * Package specified
      * @var type
@@ -39,7 +33,14 @@ class AssetInstaller extends LibraryInstaller
     public function __construct(IOInterface $io, Composer $composer, $type = 'asset')
     {
         parent::__construct($io, $composer, $type);
-        $this->vendorDirOriginal = $this->vendorDir;
+
+        $config = $composer->getConfig();
+        if (isset($config['public-dir'])) {
+            $this->publicDir = $config['public-dir'];
+        } else {
+            $this->publicDir = $this->publicDirDefault;
+        }
+        $this->vendorDir = $this->publicDir . '/' . $this->vendorDir;
     }
 
     /**
@@ -51,25 +52,17 @@ class AssetInstaller extends LibraryInstaller
     }
 
     /**
-     * Redefine vendor dir hence config and defaults
+     * setup package relative variables
      * @param type $package
      */
-    protected function redefineVendorDir(PackageInterface $package)
+    protected function setupPackageVars(PackageInterface $package)
     {
         $extra = $package->getExtra();
-        if (isset($extra['public-dir'])) {
-            $this->publicDir = $extra['public-dir'];
-        } else {
-            $this->publicDir = 'public';
-        }
-
         if (isset($extra['add-target-dir'])) {
             $this->addTargetDir = $extra['add-target-dir'];
         } else {
             $this->addTargetDir = false;
         }
-
-        $this->vendorDir = $this->publicDir . '/' . $this->vendorDirOriginal;
     }
 
     /**
@@ -77,7 +70,7 @@ class AssetInstaller extends LibraryInstaller
      */
     public function getInstallPath(PackageInterface $package)
     {
-        $this->redefineVendorDir($package);
+        $this->setupPackageVars($package);
 
         $targetDir = $package->getTargetDir();
 
