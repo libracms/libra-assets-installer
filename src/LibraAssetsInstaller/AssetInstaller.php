@@ -14,6 +14,8 @@ use Composer\Package\PackageInterface;
  */
 class AssetInstaller extends LibraryInstaller
 {
+    protected $publicDirDefault = 'public';
+
     /**
      * depends on package config, default = public
      * @var string
@@ -35,8 +37,8 @@ class AssetInstaller extends LibraryInstaller
         parent::__construct($io, $composer, $type);
 
         $config = $composer->getConfig();
-        if (isset($config['public-dir'])) {
-            $this->publicDir = $config['public-dir'];
+        if ($config->has('public-dir')) {
+            $this->publicDir = $config->get('public-dir');
         } else {
             $this->publicDir = $this->publicDirDefault;
         }
