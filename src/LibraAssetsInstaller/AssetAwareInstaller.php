@@ -79,7 +79,7 @@ class AssetAwareInstaller extends LibraryInstaller
     protected function setupPackageVars(PackageInterface $package)
     {
         $extra = $package->getExtra();
-        if (isset($extra['packagea-asset-dir'])) {
+        if (isset($extra['package-asset-dir'])) {
             $this->packageAssetDir = $extra['package-asset-dir'];
         } else {
             $this->packageAssetDir = $this->packageAssetDirDefault;
