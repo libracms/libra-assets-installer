@@ -61,7 +61,8 @@ class AssetAwareInstaller extends LibraryInstaller
         } else {
             $this->publicDir = $this->publicDirDefault;
         }
-        $this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
+        //$this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
+        $this->publicVendorDir = $this->publicDir . '/' . 'vendor';
     }
 
     /**

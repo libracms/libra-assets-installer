@@ -42,7 +42,9 @@ class AssetInstaller extends LibraryInstaller
         } else {
             $this->publicDir = $this->publicDirDefault;
         }
-        $this->vendorDir = $this->publicDir . '/' . $this->vendorDir;
+        //$this->vendorDir = $this->publicDir . '/' . $this->vendorDir; // vendor dir now is absolute path and
+        // doesnt pass when vendor-dir changed in config
+        $this->publicVendorDir = $this->publicDir . '/' . 'vendor';
     }
 
     /**
