@@ -7,7 +7,7 @@
 
 namespace LibraAssetsInstaller;
 
-use Composer\Script\PackageEvent;
+use Composer\Installer\PackageEvent;
 
 /**
  * Makes accessible vendor assets (js, css, images) by creating/updating symlink to public/vendor/vendor-name folder.<br/>
@@ -21,7 +21,7 @@ class Installer
 {
     /**
      * Creates symlink
-     * @param \Composer\Script\PackageEvent $event
+     * @param \Composer\Installer\PackageEvent $event
      */
     public static function postPackageInstall(PackageEvent $event)
     {
@@ -42,7 +42,7 @@ class Installer
 
     /**
      * Removes symlink
-     * @param \Composer\Script\PackageEvent $event
+     * @param \Composer\Installer\PackageEvent $event
      */
     public static function prePackageUninstall(PackageEvent $event)
     {
@@ -58,7 +58,7 @@ class Installer
 
     /**
      * Creates/Removes symlink if it appeared/disappeared in new version.
-     * @param \Composer\Script\PackageEvent $event
+     * @param \Composer\Installer\PackageEvent $event
      */
     public static function postPackageUpdate (PackageEvent $event)
     {
