@@ -15,20 +15,17 @@ use Composer\Repository\InstalledRepositoryInterface;
  */
 class AssetAwareInstaller extends LibraryInstaller
 {
-    protected $publicDirDefault = 'public';
-    protected $packageAssetDirDefault = 'public';
+    /**
+     * depends on package config, default = public
+     * @var string
+     */
+    protected $publicDir = 'public';
 
     /**
      * depends on package config, default = public
      * @var string
      */
-    protected $publicDir;
-
-    /**
-     * depends on package config, default = public
-     * @var string
-     */
-    protected $packageAssetDir;
+    protected $packageAssetDir = 'public';
 
     /**
      * Depends on root config, default = public/vendor
@@ -43,25 +40,15 @@ class AssetAwareInstaller extends LibraryInstaller
      */
     protected $linkPath;
 
-    /**
-     * Flage to add or don't add target directory to public asset path
-     * Package specified
-     * @var type
-     */
-    protected $addTargetDir;
-
-
-    public function __construct(IOInterface $io, Composer $composer, $type = 'asset-aware')
+    public function __construct(IOInterface $io, Composer $composer, $type = 'asset-aware',
+            Filesystem $filesystem = null, BinaryInstaller $binaryInstaller = null)
     {
-        parent::__construct($io, $composer, $type);
+        parent::__construct($io, $composer, $type, $filesystem, $binaryInstaller);
 
         $config = $composer->getConfig();
         if ($config->has('public-dir')) {
             $this->publicDir = $config->get('public-dir');
-        } else {
-            $this->publicDir = $this->publicDirDefault;
         }
-        //$this->publicVendorDir = $this->publicDir . '/' . $this->vendorDir;
         $this->publicVendorDir = $this->publicDir . '/' . 'vendor';
     }
 
@@ -82,13 +69,6 @@ class AssetAwareInstaller extends LibraryInstaller
         $extra = $package->getExtra();
         if (isset($extra['package-asset-dir'])) {
             $this->packageAssetDir = $extra['package-asset-dir'];
-        } else {
-            $this->packageAssetDir = $this->packageAssetDirDefault;
-        }
-        if (isset($extra['add-target-dir'])) {
-            $this->addTargetDir = $extra['add-target-dir'];
-        } else {
-            $this->addTargetDir = false;
         }
 
         $this->linkPath = null;
@@ -107,23 +87,13 @@ class AssetAwareInstaller extends LibraryInstaller
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function getInstallPath(PackageInterface $package)
-    {
-        $targetDir = $package->getTargetDir();
-
-        return $this->getPackageBasePath($package) . ($this->addTargetDir && $targetDir ? '/'.$targetDir : '');
-    }
-
-    /**
      * @param type $package
      * @return string name of link (like public/vendor/vendor-name/package-name
      */
     protected function getLinkName(PackageInterface $package)
     {
         $targetDir = $package->getTargetDir();
-        return $this->getPublicPackageBasePath($package) . ($this->addTargetDir && $targetDir ? '/' . $targetDir : '');
+        return $this->getPublicPackageBasePath($package) . ($targetDir ? '/' . $targetDir : '');
     }
 
     protected function getPublicPackageBasePath(PackageInterface $package)

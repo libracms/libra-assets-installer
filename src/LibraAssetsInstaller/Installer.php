@@ -27,13 +27,15 @@ class Installer
     {
         $package = $event->getOperation()->getPackage();
         $name = $package->getName();
-        $path = "vendor/$name/public";
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
+        $publicDir = $event->getComposer()->getConfig()->get('public-dir');
+        $path = "$vendorDir/$name/public";
         list($vendor, ) = explode('/', $name);
         if (is_dir($path)) {
-            if (!file_exists("public/vendor/$vendor")) {
-                mkdir("public/vendor/$vendor", 0777, true);
+            if (!file_exists("$publicDir/vendor/$vendor")) {
+                mkdir("$publicDir/vendor/$vendor", 0777, true);
             }
-            $linkName = "public/vendor/$name";
+            $linkName = "$publicDir/vendor/$name";
             if (!file_exists($linkName)) {
                 symlink("../../../$path", $linkName);
             }
@@ -48,12 +50,13 @@ class Installer
     {
         $package = $event->getOperation()->getPackage();
         $name = $package->getName();
-        $link = "public/vendor/$name";
+        $publicDir = $event->getComposer()->getConfig()->get('public-dir');
+        $link = "$publicDir/vendor/$name";
         if (is_link($link)) {
             unlink($link);
         }
         list($vendor, ) = explode('/', $name);
-        @rmdir("public/vendor/$vendor"); //remove if empty
+        @rmdir("$publicDir/vendor/$vendor"); //remove if empty
     }
 
     /**
@@ -64,19 +67,21 @@ class Installer
     {
         $package = $event->getOperation()->getTargetPackage();
         $name = $package->getName();
-        $path = "vendor/$name/public";
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
+        $publicDir = $event->getComposer()->getConfig()->get('public-dir');
+        $path = "$vendorDir/$name/public";
         list($vendor, ) = explode('/', $name);
-        $linkName = "public/vendor/$name";
+        $linkName = "$publicDir/vendor/$name";
         if (is_dir($path)) {
-            if (!file_exists("public/vendor/$vendor")) {
-                mkdir("public/vendor/$vendor", 0777, true);
+            if (!file_exists("$publicDir/vendor/$vendor")) {
+                mkdir("$publicDir/vendor/$vendor", 0777, true);
             }
             if (!file_exists($linkName)) {
                 symlink("../../../$path", $linkName);
             }
         } elseif (is_link($linkName)) {
             unlink($linkName);
-            @rmdir("public/vendor/$vendor"); //remove if empty
+            @rmdir("$publicDir/vendor/$vendor"); //remove if empty
         }
     }
 }

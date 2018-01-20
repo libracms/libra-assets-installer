@@ -54,12 +54,12 @@ There available options (in format "type default"):
     -   if your asset dir has another name - put it above
 -   add-target-dir: bool false/true (may be suitable for symfony bundles)
     -   if enabled add target dir path to public asset path
+    -   Since v3.0 always __true__, DEPRECATED.
 
 Some example:
 ~~~~
     "extra": {
-        "package-asset-dir": "assets",
-        "add-target-dir":    false
+        "package-asset-dir": "assets"
     }
 ~~~~
 In root package:

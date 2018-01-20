@@ -12,13 +12,13 @@ use Composer\IO\IOInterface;
  */
 class SymfonyAssetAwareInstaller extends AssetAwareInstaller
 {
-    protected $publicDirDefault = 'web/bundles';
-    protected $packageAssetDirDefault = 'Resources/assets';
+    protected $publicDir = 'web/bundles';
+    protected $packageAssetDir = 'Resources/assets';
 
-    public function __construct(IOInterface $io, Composer $composer, $type = 'symfony-asset-aware')
-    {
-        parent::__construct($io, $composer, $type);
-    }
+//    public function __construct(IOInterface $io, Composer $composer, $type = 'symfony-asset-aware')
+//    {
+//        parent::__construct($io, $composer, $type);
+//    }
 
     /**
      * {@inheridDoc}
