@@ -27,8 +27,9 @@ class Installer
     {
         $package = $event->getOperation()->getPackage();
         $name = $package->getName();
-        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        $publicDir = $event->getComposer()->getConfig()->get('public-dir');
+        $config = $event->getComposer()->getConfig()->raw()['config'];
+        $vendorDir = $config['vendor-dir'];
+        $publicDir = key_exists('public-dir', $config) ? $config['public-dir'] : 'public';
         $path = "$vendorDir/$name/public";
         list($vendor, ) = explode('/', $name);
         if (is_dir($path)) {
@@ -50,7 +51,8 @@ class Installer
     {
         $package = $event->getOperation()->getPackage();
         $name = $package->getName();
-        $publicDir = $event->getComposer()->getConfig()->get('public-dir');
+        $config = $event->getComposer()->getConfig()->raw()['config'];
+        $publicDir = key_exists('public-dir', $config) ? $config['public-dir'] : 'public';
         $link = "$publicDir/vendor/$name";
         if (is_link($link)) {
             unlink($link);
@@ -67,8 +69,9 @@ class Installer
     {
         $package = $event->getOperation()->getTargetPackage();
         $name = $package->getName();
-        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        $publicDir = $event->getComposer()->getConfig()->get('public-dir');
+        $config = $event->getComposer()->getConfig()->raw()['config'];
+        $vendorDir = $config['vendor-dir'];
+        $publicDir = key_exists('public-dir', $config) ? $config['public-dir'] : 'public';
         $path = "$vendorDir/$name/public";
         list($vendor, ) = explode('/', $name);
         $linkName = "$publicDir/vendor/$name";
