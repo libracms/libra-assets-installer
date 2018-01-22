@@ -1,6 +1,6 @@
 {
     "name":         "libra/libra-assets-installer",
-    "type":         "composer-installer",
+    "type":         "composer-plugin",
     "description":  "Makes accessible vendor assets (js, css, images) by creating/updating symlink to public/vendor/vendor-name folder",
     "keywords":     ["asset", "installer", "zf2"],
     "homepage":     "https://github.com/libracms/libra-assets-installer",
@@ -9,8 +9,12 @@
         {"name": "Vitalii Nagara", "email": "duke@ejoom.com", "role": "maintainer, developer", "homepage": ""}
     ],
 
+    "require": {
+        "composer-plugin-api": "^1.0"
+    },
+
     "require-dev": {
-        "composer/composer": "dev-master"
+        "composer/composer": "^1.3"
     },
 
     "autoload": {
