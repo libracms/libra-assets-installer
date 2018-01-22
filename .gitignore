@@ -4,7 +4,6 @@ nbproject
 .project
 .settings/
 .DS_Store
-/composer.lock
 .*.sw*
 .*.un~
 vendor/
