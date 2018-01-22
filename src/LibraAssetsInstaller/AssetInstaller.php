@@ -24,9 +24,10 @@ class AssetInstaller extends LibraryInstaller
     /**
      * {@inheridDoc}
      */
-    public function __construct(IOInterface $io, Composer $composer, $type = 'asset')
+    public function __construct(IOInterface $io, Composer $composer, $type = 'asset',
+            Filesystem $filesystem = null, BinaryInstaller $binaryInstaller = null)
     {
-        parent::__construct($io, $composer, $type);
+        parent::__construct($io, $composer, $type, $filesystem, $binaryInstaller);
 
         $config = $composer->getConfig();
         if ($config->has('public-dir')) {
